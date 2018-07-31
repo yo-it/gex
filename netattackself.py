@@ -47,7 +47,7 @@ def wifi_scan():
         wifiscan.do_scan()
     except socket.error:
         print("{R}ERROR: Network-Interface is down.{N}".format(R=RED, N=NORMAL))
-sys.exit(0)
+	sys.exit(0)
 
 
 def get_interface():
