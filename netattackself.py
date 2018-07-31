@@ -23,6 +23,33 @@ YELLOW = "\33[1;93m"
 NORMAL = "\033[0;0m"
 BOLD = "\033[;1m"
 
+def wifi_scan():
+    '''
+    This will perform a basic Access-Point scan.
+    Informations like WPS, Encryption, Signal Strength, ESSID, ... will be shown for every available AP.
+    The function uses 'scan.py' located in the local 'build' folder.
+    '''
+
+    interface = get_interface()
+    enable_mon_mode(interface)
+
+    wifiscan = scan.WifiScan(interface)
+    wifiscan.do_output = True
+
+    hopT = Thread(target=wifiscan.channelhop, args=[])
+    hopT.daemon = True
+    hopT.start()
+
+    # This decay is needed to avoid issues concerning the Channel-Hop-Thread
+    sleep(0.2)
+    
+    try:
+        wifiscan.do_scan()
+    except socket.error:
+        print("{R}ERROR: Network-Interface is down.{N}".format(R=RED, N=NORMAL))
+sys.exit(0)
+
+
 def get_interface():
    
     print("{Y}Select a suitable network interface:\n{N}".format(Y=YELLOW, N=NORMAL))
