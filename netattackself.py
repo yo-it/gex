@@ -508,24 +508,24 @@ def deauth_attack():
 			ap_in =''
 			num = 1
 			for bssid in access_points.keys():
-					space = 2
-					if num > 9:
-							space = 1
+				space = 2
+				if num > 9:
+					space = 1
 
-		essid = access_points[bssid]["essid"]
+					essid = access_points[bssid]["essid"]
 					access_points[bssid]["num"] = num
 					print("   [{R}{num}{N}]{sp}{bssid} | {essid}".format(num=num, R=RED, N=NORMAL, bssid=bssid.upper(), essid=essid, sp=" "*space))
-		if bssid.upper() != 'B4:A5:EF:05:0E:74':
-			ap_in+=str(num)
-			ap_in+=str(',')
-		print ap_in;
+					if bssid.upper() != 'B4:A5:EF:05:0E:74':
+						ap_in+=str(num)
+						ap_in+=str(',')
+					print ap_in;
 					num += 1
 			ap_in = ap_in[:-1]
 			print("\nSeperate multiple targets with {R}','{N} (comma).".format(R=RED, N=NORMAL))
 
 			while True:
 					ap_in = ap_in.replace(" ", "")
-		print ap_in
+					print ap_in
 					if not "," in ap_in:
 							ap_list_in = [ap_in]
 					else:
