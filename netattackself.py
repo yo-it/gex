@@ -121,11 +121,16 @@ def deauth():
 			ap_list = {}
 			
 			print("\n")
+			for bssid in access_points:
+                        	for num in ap_list_in:
+            				if int(num) == access_points[bssid]["num"]:
+                				print(" ->   {bssid} | {essid}".format(bssid=bssid.upper(), essid=access_points[bssid]["essid"]))
+                				ap_list[bssid] = access_points[bssid]["ch"]
 
+			print("\n")
 			deauthent = deauth.Deauth(ap_list, interface)
 			deauthent.start_deauth()
-		        stop_event.wait(120)
-			pass
+
 
 def main():   
     def signal_handler(signal, frame):
