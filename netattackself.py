@@ -11,6 +11,7 @@ from threading import Thread
 from time import sleep
 import datetime
 import logging
+
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR) # scapy, please shut up..
 
 # terminal colors
@@ -22,31 +23,8 @@ YELLOW = "\33[1;93m"
 NORMAL = "\033[0;0m"
 BOLD = "\033[;1m"
 
-def get_option():
-
-    while True:
-        raw_option = 6;
-        if raw_option == "help":
-            return raw_option
-
-        try:
-            option = int(raw_option)
-        except ValueError:
-            print("{R}ERROR: Option is invalid.{N}".format(R=RED, N=NORMAL))
-            continue
-
-        if 0 < option <= 12:
-            return option
-        else:
-            print("{R}ERROR: Option is invalid.{N}".format(R=RED, N=NORMAL))
-            continue
-
-def handle_option(option):
-    deauth_attack()
-
 def get_interface():
-    clear_screen()
-
+   
     print("{Y}Select a suitable network interface:\n{N}".format(Y=YELLOW, N=NORMAL))
     available_interfaces = netifaces.interfaces()
     for x in range(len(available_interfaces)):
@@ -133,7 +111,6 @@ def deauth_attack():
 			hopT.daemon = True
 			hopT.start()
 
-			clear_screen()
 			print("[{Y}*{N}] Searching for WiFi-Networks... (10 sec.)\n".format(Y=YELLOW, N=NORMAL))
 
 			wifiscan.do_scan()
@@ -178,7 +155,7 @@ def deauth_attack():
 
 					break
 
-			clear_screen()
+			
 			printings.deauth_ap()
 
 			ap_list = {}
@@ -203,8 +180,7 @@ def main():
 
     signal.signal(signal.SIGINT, signal_handler)
 
-    option = get_option()
-    handle_option(option)
+    deauth_attack()
 
 if __name__ == "__main__":
     main()
