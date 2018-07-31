@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-
+import netifaces
+from scapy.all import *
+import nfqueue
+import nmap
 import sys
 import os
 import signal
