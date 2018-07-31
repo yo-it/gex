@@ -58,7 +58,7 @@ def enable_mon_mode(interface):
     except Exception:
         sys.exit("\n{R}ERROR: Not able to activate monitor mode on selected interface.{N}\n".format(R=RED, N=NORMAL))
 
-def thread1(arg1, stop_event):
+def deauth(arg1, stop_event):
 		while (not stop_event.is_set()):
 			interface = get_interface()
 			enable_mon_mode(interface)
@@ -139,10 +139,7 @@ def main():
         sys.exit(0)
 
     signal.signal(signal.SIGINT, signal_handler)
-    t1_stop = threading.Event()
-    t1 = threading.Thread(target=thread1, args=(1, t1_stop))
-    time.sleep(120)
-    t1_stop.set()
+    deauth()
 
 if __name__ == "__main__":
     main()
