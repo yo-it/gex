@@ -23,33 +23,6 @@ YELLOW = "\33[1;93m"
 NORMAL = "\033[0;0m"
 BOLD = "\033[;1m"
 
-def wifi_scan():
-    '''
-    This will perform a basic Access-Point scan.
-    Informations like WPS, Encryption, Signal Strength, ESSID, ... will be shown for every available AP.
-    The function uses 'scan.py' located in the local 'build' folder.
-    '''
-
-    interface = get_interface()
-    enable_mon_mode(interface)
-
-    wifiscan = scan.WifiScan(interface)
-    wifiscan.do_output = True
-
-    hopT = Thread(target=wifiscan.channelhop, args=[])
-    hopT.daemon = True
-    hopT.start()
-
-    # This decay is needed to avoid issues concerning the Channel-Hop-Thread
-    sleep(0.2)
-    
-    try:
-        wifiscan.do_scan()
-    except socket.error:
-        print("{R}ERROR: Network-Interface is down.{N}".format(R=RED, N=NORMAL))
-	sys.exit(0)
-
-
 def get_interface():
    
     print("{Y}Select a suitable network interface:\n{N}".format(Y=YELLOW, N=NORMAL))
@@ -85,48 +58,8 @@ def enable_mon_mode(interface):
     except Exception:
         sys.exit("\n{R}ERROR: Not able to activate monitor mode on selected interface.{N}\n".format(R=RED, N=NORMAL))
 
-def enable_ip_forwarding():
-    ipfwd = open('/proc/sys/net/ipv4/ip_forward', 'r+')
-    ipfwd.write('1\n')
-    ipfwd.close()
-
-def disable_ip_forwarding():
-    ipfwd = open('/proc/sys/net/ipv4/ip_forward', 'r+')
-    ipfwd.write('0\n')
-    ipfwd.close()
-
-def get_gateway_ip():
-    # get the 'default' gateway
-
-    try:
-        return netifaces.gateways()['default'][netifaces.AF_INET][0]
-    except KeyError:
-        print("\n{R}ERROR: Unable to retrieve gateway IP address.\n{N}".format(R=RED, N=NORMAL))
-        return raw_input("Please enter gateway IP address manually: ")
-
-def get_local_ip(interface):
-    try:
-        local_ip = netifaces.ifaddresses(interface)[netifaces.AF_INET][0]['addr']
-        if local_ip == "127.0.0.1" or local_ip == "ff:ff:ff:ff:ff:ff":
-            sys.exit("\n{R}ERROR: Invalid network interface.{N}\n".format(R=RED, N=NORMAL))
-        return local_ip
-    except KeyError:
-        print("\n{R}ERROR: Unable to retrieve local IP address.{N}\n")
-        return raw_input("Please enter your local IP address manually: ")
-
-def get_mac_by_ip(ipaddr):
-    # get the MAC by sending ARP packets to the desired IP
-
-    ans, unans = srp(Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=ipaddr), retry=2, timeout=7)
-    for snd, rcv in ans:
-        try:
-            return rcv[Ether].src
-        except KeyError:
-            print("\n{R}ERROR: Unable to retrieve MAC address from IP address: {N}{ip}\n".format(R=RED, N=NORMAL, ip=ipaddr))
-            return raw_input("Please enter MAC address manually: ")
-        
-def deauth_attack():
-		while True:
+def thread1(arg1, stop_event):
+		while (not stop_event.is_set()):
 			interface = get_interface()
 			enable_mon_mode(interface)
 
@@ -197,17 +130,19 @@ def deauth_attack():
 
 			deauthent = deauth.Deauth(ap_list, interface)
 			deauthent.start_deauth()
-		sleep(120)
+		        stop_event.wait(120)
+			pass
 
-def main():
-    # Signal handler to catch KeyboardInterrupts
+def main():   
     def signal_handler(signal, frame):
         print("")
         sys.exit(0)
 
     signal.signal(signal.SIGINT, signal_handler)
-
-    deauth_attack()
+    t1_stop = threading.Event()
+    t1 = threading.Thread(target=thread1, args=(1, t1_stop))
+    time.sleep(120)
+    t1_stop.set()
 
 if __name__ == "__main__":
     main()
