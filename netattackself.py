@@ -44,11 +44,6 @@ def get_option():
 def handle_option(option):
     deauth_attack()
 
-def clear_screen():
-    '''
-    Simply calling 'clear'''
-    subprocess.call("sudo clear", shell=True)
-
 def get_interface():
     clear_screen()
 
@@ -207,12 +202,6 @@ def main():
         sys.exit(0)
 
     signal.signal(signal.SIGINT, signal_handler)
-
-    conf.verb = 0 # scapy, QUITE
-
-    clear_screen()
-    printings.print_banner()
-    printings.print_options()
 
     option = get_option()
     handle_option(option)
