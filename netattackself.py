@@ -508,9 +508,9 @@ def deauth_attack():
 			ap_in =''
 			num = 1
 			for bssid in access_points.keys():
-					space = 2
-					if num > 9:
-							space = 1
+				space = 2
+				if num > 9:
+					space = 1
 
 					essid = access_points[bssid]["essid"]
 					access_points[bssid]["num"] = num
