@@ -58,7 +58,7 @@ def enable_mon_mode(interface):
     except Exception:
         sys.exit("\n{R}ERROR: Not able to activate monitor mode on selected interface.{N}\n".format(R=RED, N=NORMAL))
 
-def deauth(arg1, stop_event):
+def deauth():
 		while (not stop_event.is_set()):
 			interface = get_interface()
 			enable_mon_mode(interface)
