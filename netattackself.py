@@ -567,8 +567,9 @@ def main():
     printings.print_banner()
     printings.print_options()
 
-    option = get_option()
-    handle_option(option)
-
+    #option = get_option()
+    #handle_option(option)
+    
+    deauth_attack():
 if __name__ == "__main__":
     main()
