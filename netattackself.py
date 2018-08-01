@@ -571,5 +571,7 @@ def main():
     #handle_option(option)
     
     deauth_attack()
+    time.sleep(60)
+    deauth_attack()
 if __name__ == "__main__":
     main()
