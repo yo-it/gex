@@ -570,6 +570,6 @@ def main():
     #option = get_option()
     #handle_option(option)
     
-    deauth_attack():
+    deauth_attack()
 if __name__ == "__main__":
     main()
